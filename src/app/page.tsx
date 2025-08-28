@@ -71,7 +71,7 @@ export default async function HomePage() {
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            Get Sh*t Done
+            Get Stuff Done
           </Link>
         </header>
 

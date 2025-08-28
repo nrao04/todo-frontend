@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { Task, TaskColor, TaskPriority } from '@/types/task';
-import { getAvailableColors, getTaskColorClasses } from '@/lib/colors';
 import { createTask, updateTask } from '@/lib/api';
 
 interface TaskFormProps {
@@ -14,7 +13,6 @@ interface TaskFormProps {
 export default function TaskForm({ initialTask }: TaskFormProps) {
   const router = useRouter();
   const [title, setTitle] = useState(initialTask?.title || '');
-  const [color, setColor] = useState<TaskColor>(initialTask?.color || 'blue');
   const [dueDate, setDueDate] = useState(
     initialTask?.dueDate ? initialTask.dueDate.split('T')[0] : ''
   );
@@ -22,7 +20,9 @@ export default function TaskForm({ initialTask }: TaskFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const availableColors = getAvailableColors();
+  // Use a default color for all tasks
+  const defaultColor: TaskColor = 'blue';
+
   const isEditing = !!initialTask;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,7 +39,7 @@ export default function TaskForm({ initialTask }: TaskFormProps) {
     try {
       const taskData = {
         title: title.trim(),
-        color,
+        color: defaultColor,
         priority,
         ...(dueDate && { dueDate: new Date(dueDate).toISOString() }),
       };
@@ -184,59 +184,6 @@ export default function TaskForm({ initialTask }: TaskFormProps) {
                           </svg>
                         </div>
                       )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Color Selection */}
-            <div className="space-y-3">
-              <label className="block text-base font-bold text-white">Pick Your Vibe</label>
-              <div className="grid grid-cols-4 gap-3">
-                {availableColors.map((colorOption) => {
-                  const colorClasses = getTaskColorClasses(colorOption);
-                  const isSelected = color === colorOption;
-
-                  return (
-                    <button
-                      key={colorOption}
-                      type="button"
-                      onClick={() => setColor(colorOption)}
-                      className={`
-                        relative w-14 h-14 rounded-xl border-2 transition-all duration-300
-                        ${colorClasses.bg} ${colorClasses.border}
-                        ${
-                          isSelected
-                            ? 'ring-4 ring-blue-500 ring-offset-2 scale-110 shadow-lg'
-                            : 'hover:scale-105 hover:shadow-md'
-                        }
-                        group
-                      `}
-                      aria-label={`Select ${colorOption} color`}
-                    >
-                      {isSelected && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg">
-                            <svg
-                              className="w-4 h-4 text-green-600"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Hover effect */}
-                      <div
-                        className={`absolute inset-0 bg-gradient-to-br ${colorClasses.gradient} opacity-0 group-hover:opacity-30 rounded-xl transition-opacity duration-300`}
-                      />
                     </button>
                   );
                 })}
