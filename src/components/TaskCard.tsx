@@ -19,14 +19,14 @@ export default function TaskCard({ task, onTaskUpdate }: TaskCardProps) {
   const colorClasses = getTaskColorClasses(task.color);
 
   // Handle task completion toggle
-  const handleToggle = async (e: React.MouseEvent) => {
+  const handleToggle = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation(); // prevent navigation when clicking checkbox
 
     if (isToggling) return; // prevent double-clicks
 
     setIsToggling(true);
     try {
-      await toggleTaskCompletion(task.id, !task.completed);
+      await toggleTaskCompletion(task.id, e.target.checked);
       onTaskUpdate(); // refresh the task list
     } catch (error) {
       console.error('Failed to toggle task:', error);

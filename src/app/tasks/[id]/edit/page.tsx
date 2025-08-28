@@ -3,15 +3,18 @@ import TaskForm from '@/components/TaskForm';
 import { notFound } from 'next/navigation';
 
 interface EditTaskPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function EditTaskPage({ params }: EditTaskPageProps) {
   try {
+    // await the params since it's now a Promise in Next.js 15
+    const { id } = await params;
+
     // fetch the task to edit
-    const task = await getTask(params.id);
+    const task = await getTask(id);
 
     return (
       <div className="min-h-screen bg-gray-50 py-8">
